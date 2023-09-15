@@ -70,6 +70,17 @@ export default function App() {
           <WatchedSummary watched={watched} />
           <WatchedMovieList watched={watched} />
         </Box>
+        {/* // alternatively to children we can pass elements as Props
+        <Box elements={<MovieList movies={movies} />} />
+
+        <Box
+          elements={
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          }
+        /> */}
       </Main>
     </>
   );
@@ -126,6 +137,21 @@ function Box({ children }) {
     </div>
   );
 }
+
+/*
+function Box({ elements }) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className="box">
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
+      </button>
+      {isOpen && elements}
+    </div>
+  );
+}
+*/
 
 function MovieList({ movies }) {
   return (
