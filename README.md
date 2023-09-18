@@ -209,6 +209,256 @@ In this example, the `Button` component accepts props like `backgroundColor`, `t
 
 Overall, props serve as a versatile and flexible way to define the API of a React component, allowing you to create customizable and reusable UI elements in your applications. They play a central role in React's component-based architecture.
 
+## The Component Lifecycle
+
+![Alt text](public/images/ksnip_20230918-163352.png)
+
+The React component lifecycle refers to a series of events and methods that a React component goes through during its existence, from creation to removal. Understanding the component lifecycle is crucial for managing state, handling side effects, and optimizing the performance of your React applications.
+
+In React, the component lifecycle is divided into three main phases:
+
+1. **Mounting**:
+
+   - This phase corresponds to the moment when a component is created and inserted into the DOM. There are three key lifecycle methods in the mounting phase:
+     - `constructor()`: This is the constructor method where you can initialize state and bind event handlers.
+     - `render()`: The `render` method is responsible for rendering the component's UI based on its current state and props. It is a required method in every React component.
+     - `componentDidMount()`: This method is called after the component has been rendered to the DOM. It is often used for actions such as data fetching, setting up subscriptions, or interacting with the DOM.
+
+2. **Updating**:
+
+   - The updating phase occurs when a component's state or props change, causing it to re-render. There are several lifecycle methods associated with this phase:
+     - `shouldComponentUpdate(nextProps, nextState)`: This method is called before rendering and allows you to control whether the component should update. You can implement custom logic to optimize rendering.
+     - `render()`: As mentioned earlier, the `render` method is responsible for rendering the component's UI.
+     - `componentDidUpdate(prevProps, prevState)`: This method is called after the component has re-rendered. It is commonly used for post-update actions, such as updating the DOM in response to state changes.
+
+3. **Unmounting**:
+   - The unmounting phase occurs when a component is removed from the DOM. There is one key lifecycle method associated with this phase:
+     - `componentWillUnmount()`: This method is called just before a component is removed from the DOM. It is used for cleaning up resources, such as unsubscribing from event listeners or timers, to prevent memory leaks.
+
+In addition to these main lifecycle methods, React introduced a set of new lifecycle methods in React 16.3 and later. These new methods are considered safer and more predictable than some of the older methods. They include:
+
+- `static getDerivedStateFromProps(nextProps, prevState)`: This static method is used to update the component's state based on changes in props. It runs before `render` and is not tied to component instances, making it a safer alternative to `componentWillReceiveProps`.
+
+- `getSnapshotBeforeUpdate(prevProps, prevState)`: This method is called right before the most recent render result is committed to the DOM. It can capture information from the DOM before potential changes and return it, often used in conjunction with `componentDidUpdate`.
+
+React 18 introduced asynchronous rendering, which further optimizes the component lifecycle by allowing React to batch updates and prioritize rendering based on the current rendering mode (e.g., user interactions or background updates).
+
+In summary, understanding the React component lifecycle and the associated methods is essential for managing the behavior and performance of your components. It helps you control side effects, optimize rendering, and build robust React applications.
+
+## useEffect
+
+![Alt text](public/images/ksnip_20230918-170620.png)
+
+![Alt text](public/images/ksnip_20230918-170952.png)
+
+`useEffect` is a critical hook in React that allows you to perform side effects in your functional components. Side effects include data fetching, setting up subscriptions, manually changing the DOM, and more. Here's an overview of `useEffect`:
+
+**What `useEffect` Does**:
+
+- `useEffect` enables you to handle side effects in your components by specifying functions that should be executed after the component renders.
+- It serves as a replacement for lifecycle methods like `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount` in class components.
+
+**When to Use `useEffect`**:
+
+- Use `useEffect` when you need to perform side effects after rendering. Common scenarios include:
+  - Fetching data from an API.
+  - Subscribing to external data sources, such as WebSockets.
+  - Manually changing the DOM, like updating the title of a webpage.
+  - Synchronizing state or subscriptions with external libraries.
+
+**Syntax**:
+
+```jsx
+useEffect(() => {
+  // Code for the side effect goes here
+}, [dependencies]);
+```
+
+- The first argument is a function that contains the code for your side effect.
+- The second argument is an optional array of dependencies. When any of these dependencies change, the effect function is re-run. If omitted, the effect runs after every render.
+
+**Common Best Practices**:
+
+1. **Always Specify Dependencies**: If you omit the second argument (dependencies array), the effect will run after every render. To avoid unnecessary re-renders, specify dependencies that the effect relies on. This is an important optimization.
+
+   ```jsx
+   useEffect(() => {
+     // Effect code
+   }, [dependency1, dependency2]);
+   ```
+
+2. **Cleanup**: If your effect requires cleanup (e.g., unsubscribing from a subscription or clearing timeouts/intervals), return a cleanup function from the effect.
+
+   ```jsx
+   useEffect(() => {
+     const subscription = subscribeToData();
+
+     return () => {
+       // Cleanup code (unsubscribe, clear timers, etc.)
+       subscription.unsubscribe();
+     };
+   }, [dependency]);
+   ```
+
+3. **Avoid Infinite Loops**: Be cautious when using `useEffect` to update state inside the effect because it can lead to infinite loops. Use the dependencies array to control when the effect should run.
+
+   ```jsx
+   useEffect(() => {
+     // This will create an infinite loop if not handled properly
+     setState(newValue);
+   }, [newValue]); // Be careful with newValue here
+   ```
+
+4. **Multiple Effects**: You can use multiple `useEffect` hooks in a single component to separate concerns and keep the code clean.
+
+   ```jsx
+   useEffect(() => {
+     // Effect 1
+   }, [dependency1]);
+
+   useEffect(() => {
+     // Effect 2
+   }, [dependency2]);
+   ```
+
+5. **Async Effects**: If your effect contains asynchronous code (e.g., fetching data with `async/await`), you can mark the effect as `async`. However, be cautious about handling errors.
+
+   ```jsx
+   useEffect(() => {
+     async function fetchData() {
+       try {
+         const response = await fetch("https://api.example.com/data");
+         const data = await response.json();
+         setData(data);
+       } catch (error) {
+         console.error("Error fetching data:", error);
+       }
+     }
+     fetchData();
+   }, []);
+   ```
+
+`useEffect` is a versatile and powerful hook in React, but it should be used thoughtfully and with an understanding of how it affects component rendering and performance. Properly managing side effects and dependencies can lead to efficient and maintainable React components.
+
+## event handler vs effects
+
+Event handlers and effects are both essential concepts in React, but they serve different purposes and are used in different scenarios within your components.
+
+**Event Handlers**:
+
+1. **Purpose**: Event handlers are functions that are called in response to user interactions or other events, such as a button click, input change, or mouseover.
+2. **Usage**: Event handlers are typically used to handle user input and trigger actions within your components. For example, you might use an event handler to update the component's state or perform some other logic when a button is clicked.
+3. **Lifecycle**: Event handlers do not have a specific lifecycle associated with them. They are called directly in response to events and execute immediately.
+4. **Syntax**: Event handlers are defined as functions and attached to JSX elements using event props (e.g., `onClick`, `onChange`).
+
+**Example**:
+
+```jsx
+function MyComponent() {
+  const handleClick = () => {
+    // Handle the button click event
+  };
+
+  return <button onClick={handleClick}>Click Me</button>;
+}
+```
+
+**Effects (useEffect)**:
+
+1. **Purpose**: Effects are functions that allow you to perform side effects in your functional components, such as data fetching, DOM manipulation, or subscription setup.
+2. **Usage**: Effects are used when you need to perform tasks that are not directly related to user interactions but are related to the component's lifecycle or other asynchronous operations.
+3. **Lifecycle**: Effects are part of the component lifecycle and are called after the component has rendered (or re-rendered). You can control when effects run by specifying dependencies.
+4. **Syntax**: Effects are created using the `useEffect` hook and are typically defined inside functional components.
+
+**Example**:
+
+```jsx
+import { useEffect, useState } from "react";
+
+function MyComponent() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // Fetch data when the component mounts
+    fetch("https://api.example.com/data")
+      .then((response) => response.json())
+      .then((data) => setData(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []); // Empty dependency array means the effect runs once after the initial render
+
+  return <div>{data ? <p>Data: {data}</p> : <p>Loading...</p>}</div>;
+}
+```
+
+In summary, event handlers are used to respond to user interactions and events, while effects are used to manage side effects, perform asynchronous operations, and interact with the component lifecycle. Both are important for building dynamic and interactive React applications, and they serve complementary roles in managing different aspects of your components.
+
+## The useEffect Dependency Array
+
+![Alt text](public/images/ksnip_20230918-194038.png)
+
+![Alt text](public/images/ksnip_20230918-194524.png)
+
+![Alt text](public/images/ksnip_20230918-194913.png)
+
+The dependency array in the `useEffect` hook is an optional second argument that allows you to specify dependencies for the effect. It plays a crucial role in determining when the effect should run and is a powerful tool for optimizing and controlling the behavior of your React components. Here's how the dependency array works and how to use it effectively:
+
+**Syntax**:
+
+```jsx
+useEffect(() => {
+  // Effect code
+}, [dependency1, dependency2, ...]);
+```
+
+- The second argument of `useEffect` is an array of dependencies, which is a list of variables or values that the effect depends on.
+
+**How the Dependency Array Works**:
+
+- When the component renders, React compares the current values of the dependencies with their previous values (from the previous render).
+- If any dependency value has changed between renders, React will execute the effect function. If none of the dependencies have changed, React will skip the effect.
+
+**Common Use Cases for the Dependency Array**:
+
+1. **Running the Effect Once**: To run an effect only once, right after the initial render, provide an empty dependency array. This ensures that the effect runs once and doesn't re-run on subsequent renders.
+
+   ```jsx
+   useEffect(() => {
+     // Effect code runs once
+   }, []);
+   ```
+
+2. **Running the Effect When Dependencies Change**: If you want the effect to run whenever specific dependencies change, include those dependencies in the array. The effect will run when any of these dependencies have different values compared to the previous render.
+
+   ```jsx
+   const [count, setCount] = useState(0);
+
+   useEffect(() => {
+     // Effect code runs when count changes
+     console.log(`Count changed to ${count}`);
+   }, [count]);
+   ```
+
+3. **Cleaning Up Effects**: When you have cleanup logic in your effect (e.g., unsubscribing from a subscription), you should specify that dependency in the array. This ensures that the cleanup code runs when the component unmounts or when the dependency changes.
+
+   ```jsx
+   useEffect(() => {
+     const subscription = subscribeToData();
+
+     return () => {
+       // Cleanup code (unsubscribe, clear timers, etc.)
+       subscription.unsubscribe();
+     };
+   }, [dependency]);
+   ```
+
+**Tips for Using the Dependency Array Effectively**:
+
+- Only include dependencies that are directly used within the effect. Avoid including unnecessary dependencies, as this can lead to unnecessary re-renders.
+- Be cautious when using objects or arrays as dependencies, as React compares them by reference. If the reference does not change, the effect won't run, even if the content of the object or array changes. You may need to use the `useState` hook to create a new reference when the content changes.
+- If you need to run cleanup logic when the component unmounts, specify that cleanup dependency in the array, or use the `return` statement to return a cleanup function.
+
+The dependency array in `useEffect` is a powerful mechanism for controlling the behavior of your effects, optimizing performance, and ensuring that side effects are executed at the right time in your React components. Properly managing dependencies can lead to more efficient and predictable component behavior.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
