@@ -459,6 +459,274 @@ useEffect(() => {
 
 The dependency array in `useEffect` is a powerful mechanism for controlling the behavior of your effects, optimizing performance, and ensuring that side effects are executed at the right time in your React components. Properly managing dependencies can lead to more efficient and predictable component behavior.
 
+## Cleaning Up
+
+Cleaning up in React components refers to the process of releasing resources, unsubscribing from external sources, or performing any necessary cleanup actions before a component is unmounted or before a new effect is executed. Proper cleanup is essential to prevent memory leaks and ensure that your application behaves correctly. React provides mechanisms to handle cleanup in functional components using the `useEffect` hook.
+
+Here's how you can perform cleanup in React:
+
+1. **Returning a Cleanup Function**:
+
+   Inside an effect created with `useEffect`, you can return a function that will be executed when the component unmounts or when the dependencies specified in the dependency array change. This is the primary way to perform cleanup.
+
+   ```jsx
+   useEffect(() => {
+     // Effect code
+     return () => {
+       // Cleanup code
+     };
+   }, [dependencies]);
+   ```
+
+   For example, you can use this pattern to unsubscribe from subscriptions, clear timers, or release resources.
+
+   ```jsx
+   useEffect(() => {
+     const subscription = subscribeToData();
+
+     return () => {
+       // Cleanup: Unsubscribe from the subscription
+       subscription.unsubscribe();
+     };
+   }, [dependency]);
+   ```
+
+   ```jsx
+   import React, { useState, useEffect } from "react";
+
+   function TimerComponent() {
+     const [seconds, setSeconds] = useState(0);
+
+     useEffect(() => {
+       // Function to increment the timer every second
+       const intervalId = setInterval(() => {
+         setSeconds((prevSeconds) => prevSeconds + 1);
+       }, 1000);
+
+       // Cleanup function to clear the timer when the component unmounts
+       return () => {
+         clearInterval(intervalId);
+       };
+     }, []); // Empty dependency array for running the effect once
+
+     return (
+       <div>
+         <p>Timer: {seconds} seconds</p>
+       </div>
+     );
+   }
+
+   export default TimerComponent;
+   ```
+
+2. **Cleanup on Unmount**:
+
+   Returning a cleanup function from an effect ensures that it runs when the component unmounts. This is useful for cleaning up resources associated with the component.
+
+   ```jsx
+   import React, { useState, useEffect } from "react";
+
+   function UnmountCleanupComponent() {
+     const [visible, setVisible] = useState(true);
+
+     useEffect(() => {
+       // Effect for subscribing to a resource (e.g., WebSocket) when the component mounts
+       const subscription = subscribeToResource();
+
+       // Cleanup function to unsubscribe when the component unmounts
+       return () => {
+         subscription.unsubscribe();
+       };
+     }, []); // Empty dependency array for running the effect once on mount
+
+     const toggleVisibility = () => {
+       setVisible((prevVisible) => !prevVisible);
+     };
+
+     return (
+       <div>
+         <button onClick={toggleVisibility}>
+           {visible ? "Hide Component" : "Show Component"}
+         </button>
+         {visible && <ResourceComponent />}
+       </div>
+     );
+   }
+
+   function ResourceComponent() {
+     return <p>Resource Component</p>;
+   }
+
+   // Simulated subscription function
+   function subscribeToResource() {
+     // Simulate a subscription and return an object with an unsubscribe method
+     const subscription = {
+       unsubscribe: () => {
+         console.log("Unsubscribed from resource");
+         // Perform cleanup or unsubscribe logic here
+       },
+     };
+     return subscription;
+   }
+
+   export default UnmountCleanupComponent;
+   ```
+
+3. **Cleanup on Dependency Change**:
+
+   If you specify dependencies in the dependency array of `useEffect`, the effect will also run when any of those dependencies change. In this case, the cleanup function is executed before the effect runs again. This can be useful for cleanup before re-subscribing or resetting resources.
+
+   ```jsx
+   useEffect(() => {
+     // Effect code
+     return () => {
+       // Cleanup code
+     };
+   }, [dependency1, dependency2]);
+   ```
+
+4. **Multiple Effects with Cleanup**:
+
+   You can use multiple `useEffect` hooks in a single component, each with its cleanup logic. This allows you to organize cleanup code for different side effects separately.
+
+   ```jsx
+   useEffect(() => {
+     // Effect 1 code
+     return () => {
+       // Cleanup for Effect 1
+     };
+   }, [dependency1]);
+
+   useEffect(() => {
+     // Effect 2 code
+     return () => {
+       // Cleanup for Effect 2
+     };
+   }, [dependency2]);
+   ```
+
+   ```jsx
+   import React, { useState, useEffect } from "react";
+
+   function MultiEffectComponent() {
+     const [dataA, setDataA] = useState(null);
+     const [dataB, setDataB] = useState(null);
+
+     // Effect 1: Data fetching for dataA
+     useEffect(() => {
+       const abortController = new AbortController();
+
+       const fetchDataA = async () => {
+         try {
+           const response = await fetch("https://api.example.com/dataA", {
+             signal: abortController.signal, // Pass the AbortController's signal
+           });
+           const result = await response.json();
+           setDataA(result);
+         } catch (error) {
+           console.error("Error fetching data A:", error);
+         }
+       };
+
+       fetchDataA();
+
+       // Cleanup for Effect 1: Cancel the data fetch if the component unmounts
+       return () => {
+         abortController.abort(); // Abort the fetch operation
+       };
+     }, []); // Empty dependency array for running Effect 1 once
+
+     // Effect 2: Another data fetching for dataB
+     useEffect(() => {
+       const abortController = new AbortController();
+
+       const fetchDataB = async () => {
+         try {
+           const response = await fetch("https://api.example.com/dataB", {
+             signal: abortController.signal, // Pass the AbortController's signal
+           });
+           const result = await response.json();
+           setDataB(result);
+         } catch (error) {
+           console.error("Error fetching data B:", error);
+         }
+       };
+
+       fetchDataB();
+
+       // Cleanup for Effect 2: Cancel the data fetch if the component unmounts
+       return () => {
+         abortController.abort(); // Abort the fetch operation
+       };
+     }, []); // Empty dependency array for running Effect 2 once
+
+     return (
+       <div>
+         <p>Data A: {dataA}</p>
+         <p>Data B: {dataB}</p>
+       </div>
+     );
+   }
+
+   export default MultiEffectComponent;
+   ```
+
+5. **Unmount Phase Cleanup**:
+
+Cleanup functions run during the unmount phase when the component is removed from the DOM. This is an important step in preventing memory leaks and ensuring that resources are properly released.
+
+```jsx
+import React, { useState, useEffect } from "react";
+
+function TimerComponent() {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    // Function to increment the timer every second
+    const intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+
+    // Cleanup function to clear the timer when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []); // Empty dependency array for running the effect once
+
+  return (
+    <div>
+      <p>Timer: {seconds} seconds</p>
+    </div>
+  );
+}
+
+export default TimerComponent;
+```
+
+6. **Error Handling**:
+
+You can also include error-handling logic in your cleanup functions to handle unexpected errors that occur during cleanup.
+
+```jsx
+useEffect(() => {
+  try {
+    // Effect code
+  } catch (error) {
+    console.error("Error in effect:", error);
+  }
+
+  return () => {
+    try {
+      // Cleanup code
+    } catch (error) {
+      console.error("Error in cleanup:", error);
+    }
+  };
+}, [dependency]);
+```
+
+Proper cleanup in React ensures that your components behave predictably, avoid memory leaks, and maintain a healthy application state. It's an important aspect of managing side effects in functional components and contributes to the overall stability and reliability of your React applications.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
