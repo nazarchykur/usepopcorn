@@ -727,6 +727,118 @@ useEffect(() => {
 
 Proper cleanup in React ensures that your components behave predictably, avoid memory leaks, and maintain a healthy application state. It's an important aspect of managing side effects in functional components and contributes to the overall stability and reliability of your React applications.
 
+# react hooks and their rules
+
+![Alt text](public/images/ksnip_20230919-172807.png)
+
+![Alt text](public/images/ksnip_20230919-183747.png)
+
+![Alt text](public/images/ksnip_20230919-183905.png)
+
+![Alt text](public/images/ksnip_20230919-184105.png)
+
+![Alt text](public/images/ksnip_20230919-184328.png)
+
+![Alt text](public/images/ksnip_20230919-184515.png)
+
+![Alt text](public/images/ksnip_20230919-184628.png)
+
+React hooks are functions that allow functional components to "hook into" React state and lifecycle features without the need for class components. They provide a way to manage state, side effects, and other React features in functional components. Here are some commonly used React hooks and their rules:
+
+1. **useState**:
+
+   - **Rule**: Call `useState` inside a functional component to declare a state variable.
+   - **Usage**: It returns an array with the current state value and a function to update the state.
+
+   ```jsx
+   const [count, setCount] = useState(0);
+   ```
+
+2. **useEffect**:
+
+   - **Rule**: Call `useEffect` inside a functional component to manage side effects and perform actions after the component renders.
+   - **Usage**: It takes a function as its first argument, which contains the side effect code, and an optional dependency array as the second argument.
+
+   ```jsx
+   useEffect(() => {
+     // Side effect code
+   }, [dependencies]);
+   ```
+
+3. **useContext**:
+
+   - **Rule**: Call `useContext` inside a functional component to access data from a context provider.
+   - **Usage**: It takes a context object as its argument and returns the current context value.
+
+   ```jsx
+   const contextValue = useContext(MyContext);
+   ```
+
+4. **useReducer**:
+
+   - **Rule**: Call `useReducer` inside a functional component to manage state with complex logic.
+   - **Usage**: It returns the current state and a dispatch function to update the state based on actions.
+
+   ```jsx
+   const [state, dispatch] = useReducer(reducer, initialState);
+   ```
+
+5. **useRef**:
+
+   - **Rule**: Call `useRef` inside a functional component to create mutable references to DOM elements or values that persist across renders.
+   - **Usage**: It returns a `ref` object with a `current` property.
+
+   ```jsx
+   const myRef = useRef(initialValue);
+   ```
+
+6. **useMemo**:
+
+   - **Rule**: Call `useMemo` inside a functional component to memoize expensive calculations.
+   - **Usage**: It takes a function and an array of dependencies and returns a memoized value.
+
+   ```jsx
+   const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+   ```
+
+7. **useCallback**:
+
+   - **Rule**: Call `useCallback` inside a functional component to memoize callback functions.
+   - **Usage**: It takes a callback function and an array of dependencies and returns a memoized callback.
+
+   ```jsx
+   const memoizedCallback = useCallback(() => {
+     // Function logic
+   }, [dependencies]);
+   ```
+
+8. **Custom Hooks**:
+
+   - **Rule**: Create custom hooks by starting the function name with "use" to reuse stateful logic across multiple components.
+   - **Usage**: Custom hooks can encapsulate complex logic, state, or side effects, and they follow the same rules as regular hooks.
+
+   ```jsx
+   function useCustomHook() {
+     // Custom hook logic
+   }
+   ```
+
+**Rules for Using Hooks**:
+
+1. Hooks should always be called at the top level of your functional component or custom hook. Don't call hooks inside loops, conditions, or nested functions.
+
+2. Hooks should be called conditionally or in loops from the same component or custom hook to maintain consistent state.
+
+3. Hooks should always be called in the same order within a component. This ensures that React can correctly associate state and effects with components.
+
+4. Custom hooks should always start with the word "use" to differentiate them from regular functions and make it clear that they are hooks.
+
+5. Only call hooks from functional components or other custom hooks, not from regular JavaScript functions.
+
+6. You cannot use hooks in class components; they are specifically designed for functional components.
+
+Following these rules and guidelines ensures that you use React hooks correctly and efficiently in your functional components, leading to more maintainable and predictable code.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
