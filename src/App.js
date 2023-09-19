@@ -130,9 +130,8 @@ export default function App() {
         setMovies(data.Search);
         setError("");
       } catch (error) {
-        console.error(error.message);
         if (error.name !== "AbortError") {
-          console.log("Fetch aborted");
+          console.log(error.message);
           setError(error.message);
         }
       } finally {
@@ -348,28 +347,51 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
-  useEffect(() => {
-    async function getMovieDetails() {
-      setIsLoading(true);
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&&i=${selectedId}`
-      );
-      const data = await res.json();
-      setMovie(data);
-      setIsLoading(false);
-    }
-    getMovieDetails();
-  }, [selectedId]);
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+        }
+      }
 
-  useEffect(() => {
-    if (!title) return;
-    document.title = `Movie | ${title}`;
+      document.addEventListener("keydown", callback);
 
-    return function () {
-      document.title = "usePopcorn";
-      // console.log(`Clean up effect for movie ${title}`);
-    };
-  }, [title]);
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [onCloseMovie]
+  );
+
+  useEffect(
+    function () {
+      async function getMovieDetails() {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&&i=${selectedId}`
+        );
+        const data = await res.json();
+        setMovie(data);
+        setIsLoading(false);
+      }
+      getMovieDetails();
+    },
+    [selectedId]
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+        // console.log(`Clean up effect for movie ${title}`);
+      };
+    },
+    [title]
+  );
 
   return (
     <div className="details">
