@@ -843,6 +843,99 @@ Following these rules and guidelines ensures that you use React hooks correctly 
 
 ![Alt text](public/images/ksnip_20230920-122558.png)
 
+# useRef
+
+![Alt text](public/images/ksnip_20230920-124250.png)
+
+![Alt text](public/images/ksnip_20230920-124439.png)
+
+`useRef` is a React hook that allows you to create mutable references to DOM elements or values that persist across renders. It is commonly used for accessing and interacting with DOM elements directly and for keeping track of values that should not trigger re-renders when they change. Here's how `useRef` works and how to use it:
+
+**Basic Usage**:
+
+1. **Creating a Ref**:
+
+   To create a ref, you call the `useRef` function, typically within a functional component. It initializes a ref object with a `current` property that can be used to store and access the referenced value or DOM element.
+
+   ```jsx
+   import React, { useRef } from "react";
+
+   function MyComponent() {
+     const myRef = useRef();
+     // ...
+   }
+   ```
+
+2. **Assigning a Ref to a DOM Element**:
+
+   You can assign a ref to a DOM element by passing the `ref` attribute to the element in JSX. This allows you to interact with the DOM element directly using the `current` property of the ref.
+
+   ```jsx
+   function MyComponent() {
+     const myRef = useRef();
+
+     const handleClick = () => {
+       // Access and manipulate the DOM element
+       myRef.current.focus();
+     };
+
+     return (
+       <div>
+         <input ref={myRef} />
+         <button onClick={handleClick}>Focus Input</button>
+       </div>
+     );
+   }
+   ```
+
+   In this example, when the "Focus Input" button is clicked, the `handleClick` function uses `myRef.current` to focus the input element.
+
+**Use Cases**:
+
+1. **Accessing and Manipulating DOM Elements**:
+
+   `useRef` is commonly used to access and manipulate DOM elements directly. You can assign a ref to a DOM element and then use the `current` property to interact with it, such as setting focus, reading values, or triggering animations.
+
+2. **Storing Values without Triggering Re-renders**:
+
+   Unlike state variables (`useState`), changes to the `current` property of a ref do not trigger re-renders in functional components. This makes refs useful for storing values that don't need to be part of the component's state but need to persist across renders.
+
+   ```jsx
+   function MyComponent() {
+     const countRef = useRef(0);
+
+     const incrementCount = () => {
+       countRef.current += 1;
+       console.log("Current count:", countRef.current);
+     };
+
+     return (
+       <div>
+         <p>Count: {countRef.current}</p>
+         <button onClick={incrementCount}>Increment</button>
+       </div>
+     );
+   }
+   ```
+
+   In this example, the `countRef` ref stores a count value that doesn't trigger re-renders when incremented.
+
+3. **Preserving State Across Renders**:
+
+   Refs can also be used to preserve state or values across renders, such as maintaining previous state values or referencing the latest value of a variable.
+
+**Important Notes**:
+
+- When updating the `current` property of a ref, React does not trigger a re-render of the component. This means that changes to `current` won't cause the component to update or re-render.
+
+- Refs are mutable, which means you can change their `current` property directly. However, it's important to avoid modifying the `current` property directly within the render method. Instead, use refs within event handlers or effects.
+
+- While refs are often used for DOM elements, they can also be used to store any mutable value.
+
+- Refs can be useful in combination with other hooks like `useEffect` for managing side effects that involve accessing and manipulating the DOM.
+
+In summary, `useRef` is a versatile React hook that provides a way to create references to DOM elements and store mutable values. It is commonly used for accessing and interacting with the DOM directly and for preserving values across renders without causing re-renders.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
