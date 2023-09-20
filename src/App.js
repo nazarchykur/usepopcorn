@@ -238,6 +238,20 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   // if (imdbRating > 8) [isTop, setIsTop] = useState(true);
   // if (imdbRating > 8) return <p>Greates ever!</p>;
 
+  // DO NOT DO THAT also!!! useState(imdbRating > 8) = it worked at the begining when component mount
+  // const [isTop, setIsTop] = useState(imdbRating > 8);
+  // console.log(isTop);
+  // useEffect(
+  //   function () {
+  //     setIsTop(imdbRating > 8);
+  //   },
+  //   [imdbRating]
+  // );
+
+  // it is more clean and simple to create derived var = each time when it rerenders this var will be updated that's why it works
+  // const isTop = imdbRating > 8;
+  // console.log(isTop);
+
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
