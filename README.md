@@ -839,6 +839,10 @@ React hooks are functions that allow functional components to "hook into" React 
 
 Following these rules and guidelines ensures that you use React hooks correctly and efficiently in your functional components, leading to more maintainable and predictable code.
 
+# useState Summary
+
+![Alt text](public/images/ksnip_20230920-122558.png)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
