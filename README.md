@@ -936,6 +936,115 @@ Following these rules and guidelines ensures that you use React hooks correctly 
 
 In summary, `useRef` is a versatile React hook that provides a way to create references to DOM elements and store mutable values. It is commonly used for accessing and interacting with the DOM directly and for preserving values across renders without causing re-renders.
 
+# What are Custom Hooks When to Create One
+
+![Alt text](public/images/ksnip_20230920-141004.png)
+
+Custom hooks in React are reusable JavaScript functions that encapsulate and manage stateful logic, side effects, or other complex behavior in a way that can be shared across multiple components. They follow the naming convention of starting with "use" to make it clear that they are hooks, even though they are not built-in hooks provided by React. Custom hooks enable you to abstract and reuse functionality in a clean and organized manner.
+
+**When to Create a Custom Hook**:
+
+1. **Reusing Logic Across Components**:
+
+   Create a custom hook when you have logic or behavior that is used in multiple components. By encapsulating this logic in a custom hook, you can ensure consistent behavior across different parts of your application.
+
+2. **Separating Concerns**:
+
+   Custom hooks allow you to separate concerns in your components. For example, you can create a custom hook for data fetching, authentication, form handling, or any other domain-specific logic. This separation of concerns makes your components cleaner and easier to maintain.
+
+3. **Abstracting Complex Behavior**:
+
+   When you have complex behavior that involves managing state, side effects, or coordination between different pieces of logic, custom hooks provide a way to abstract and simplify that behavior. This can improve the readability and maintainability of your code.
+
+4. **Testing and Debugging**:
+
+   Custom hooks make it easier to test and debug your code. You can write unit tests for your custom hooks independently of the components that use them, leading to more robust and testable code.
+
+**How to Create a Custom Hook**:
+
+Creating a custom hook is straightforward:
+
+1. **Define the Hook Function**:
+
+   Create a JavaScript function that encapsulates the logic you want to reuse. This function can include state management (using `useState` or `useReducer`), side effects (using `useEffect`), or any other custom logic.
+
+   ```jsx
+   function useCustomHook() {
+     // Logic and state management
+   }
+   ```
+
+2. **Use Built-in Hooks**:
+
+   Within your custom hook, you can use built-in React hooks, such as `useState`, `useEffect`, or `useContext`, to implement the desired behavior.
+
+3. **Return Values and Functions**:
+
+   Your custom hook should return values or functions that can be used by components to interact with the encapsulated logic. This allows components to access and utilize the custom hook's functionality.
+
+   ```jsx
+   function useCustomHook() {
+     const [data, setData] = useState([]);
+     const fetchData = async () => {
+       // Fetch data and update state
+     };
+
+     return {
+       data,
+       fetchData,
+     };
+   }
+   ```
+
+4. **Usage in Components**:
+
+   To use the custom hook in your components, simply call it within a functional component and access the returned values and functions.
+
+   ```jsx
+   function MyComponent() {
+     const { data, fetchData } = useCustomHook();
+
+     // Use data and fetchData within the component
+   }
+   ```
+
+**Example Custom Hook**:
+
+Here's a simplified example of a custom hook for data fetching:
+
+```jsx
+import { useState, useEffect } from "react";
+
+function useDataFetching(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+        setData(result);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [url]);
+
+  return { data, loading };
+}
+
+export default useDataFetching;
+```
+
+In this example, the custom hook `useDataFetching` encapsulates data fetching logic and returns the fetched data and a loading indicator. Components can use this hook to fetch data without duplicating the same logic.
+
+To summarize, custom hooks are a powerful way to reuse and organize logic in your React applications. You can create custom hooks to encapsulate stateful or side-effect-related logic, making your components more modular, testable, and maintainable. Custom hooks should be considered when you have logic that needs to be shared across multiple components or when you want to abstract complex behavior.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
